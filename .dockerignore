@@ -1,0 +1,18 @@
+# Ignorar arquivos desnecessários
+docs/
+**/.DS_Store
+**/.idea
+**/.vscode
+**/.git
+**/.gitignore
+**/.env
+**/target
+**/build
+**/dist
+**/node_modules
+**/.cache
+**/*.log
+
+# Manter arquivos essenciais para o build
+!pom.xml
+!src/
