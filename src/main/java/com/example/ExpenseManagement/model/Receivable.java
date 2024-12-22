@@ -1,12 +1,19 @@
 package com.example.ExpenseManagement.model;
 
-public class Receivable extends Movimentations {
-    private StatusReceivable statusReceivable;
-    private String person;
+import java.time.LocalDateTime;
 
-    public void receivedValue (double value) {
-        this.setAmount(this.getAmount() - value);
+public class Receivable extends Movimentations {
+
+    private StatusReceivable statusReceivable;
+
+    public Receivable (String userId, String description, double amount,
+                       String category, LocalDateTime dateTime,
+                       StatusReceivable status, String person) {
+        super(userId, description, amount, category, dateTime, person);
+        this.statusReceivable = status;
     }
+
+    public Receivable(){}
 
     public StatusReceivable getStatusReceivable() {
         return statusReceivable;
@@ -16,11 +23,16 @@ public class Receivable extends Movimentations {
         this.statusReceivable = statusReceivable;
     }
 
-    public String getPerson() {
-        return person;
-    }
+    public void receivedValue (double value) {
+        if (value <= 0)
+            throw new IllegalArgumentException("This value isn't permitted...");
 
-    public void setPerson(String person) {
-        this.person = person;
+        if (value > this.getAmount())
+            throw new IllegalArgumentException("This operation isn't valid...");
+
+        this.setAmount(this.getAmount() - value);
+
+        if (this.getAmount() == 0)
+            this.statusReceivable = StatusReceivable.RECEIVED;
     }
 }

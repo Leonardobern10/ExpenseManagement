@@ -1,16 +1,16 @@
 package com.example.ExpenseManagement.model;
 
-public enum Status {
-    PAID_OFF("Paid off"),
-    NOT_PAID_OFF("Not paid off");
+public enum StatusDebt {
+    PAID_OFF("paid off"),
+    NOT_PAID_OFF("not paid off");
 
     private final String description;
 
-    Status (String description) {
+    StatusDebt (String description) {
         this.description = description;
     }
 
-    public String getDescription () {
+    public String getDescription() {
         return description;
     }
 }

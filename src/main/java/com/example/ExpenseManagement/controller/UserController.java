@@ -21,12 +21,14 @@ public class UserController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<User> createUser (@RequestBody AuthRequest authRequest) {
+    public ResponseEntity<User> createUser (
+            @RequestBody AuthRequest authRequest) {
         return ResponseEntity.ok(authService.register(authRequest));
     }
 
     @PostMapping("/login")
-    public ResponseEntity<AuthResponse> loginUser (@RequestBody AuthRequest authRequest) {
+    public ResponseEntity<AuthResponse> loginUser (
+            @RequestBody AuthRequest authRequest) {
         return ResponseEntity.ok(authService.login(authRequest));
     }
 

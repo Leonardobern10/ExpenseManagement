@@ -2,11 +2,14 @@ package com.example.ExpenseManagement.model;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
+@Component
 @Document(collection = "movimentations")
-public abstract class Movimentations {
+public class Movimentations {
 
     @Id
     private String id;
@@ -15,13 +18,42 @@ public abstract class Movimentations {
     private double amount;
     private String category;
     private LocalDateTime date = LocalDateTime.now();
+    private String person;
+    private List<String> registers;
 
-    public Movimentations(String userId, String description, double amount, String category, LocalDateTime date) {
+
+    public Movimentations(String userId, String description, double amount,
+                          String category, LocalDateTime date) {
         this.userId = userId;
         this.description = description;
         this.amount = amount;
         this.category = category;
         this.date = date;
+        this.person = null;
+        this.registers = null;
+    }
+
+    public Movimentations(String userId, String description, double amount,
+                          String category, LocalDateTime date, String person) {
+        this.userId = userId;
+        this.description = description;
+        this.amount = amount;
+        this.category = category;
+        this.date = date;
+        this.person = person;
+        this.registers = null;
+    }
+
+    public Movimentations(String userId, String description, double amount,
+                          String category, LocalDateTime date, String person,
+                          List<String> registers) {
+        this.userId = userId;
+        this.description = description;
+        this.amount = amount;
+        this.category = category;
+        this.date = date;
+        this.person = person;
+        this.registers = registers;
     }
 
     public Movimentations() {}
@@ -73,5 +105,25 @@ public abstract class Movimentations {
 
     public void setDate(LocalDateTime date) {
         this.date = date;
+    }
+
+    public String getPerson () {
+        return person;
+    }
+
+    public void setPerson (String person) {
+        this.person = person;
+    }
+
+    public List<String> getRegisters () {
+        return registers;
+    }
+
+    public void setRegisters (List<String> registers) {
+        this.registers = registers;
+    }
+
+    public void addRegister (String register) {
+        this.registers.add(register);
     }
 }
