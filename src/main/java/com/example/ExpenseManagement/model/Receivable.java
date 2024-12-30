@@ -1,5 +1,7 @@
 package com.example.ExpenseManagement.model;
 
+import com.example.ExpenseManagement.model.movimentations.Movimentations;
+
 import java.time.LocalDateTime;
 
 public class Receivable extends Movimentations {

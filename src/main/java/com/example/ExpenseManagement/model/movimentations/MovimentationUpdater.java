@@ -1,4 +1,4 @@
-package com.example.ExpenseManagement.model;
+package com.example.ExpenseManagement.model.movimentations;
 
 import java.time.LocalDateTime;
 

@@ -1,3 +1,3 @@
 package com.example.ExpenseManagement.dto;
 
-public record AuthRequest (String username, String password){};
+public record AuthRequest (String username, String password, String email){};

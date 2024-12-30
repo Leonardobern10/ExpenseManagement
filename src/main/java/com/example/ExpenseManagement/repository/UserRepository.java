@@ -1,6 +1,6 @@
 package com.example.ExpenseManagement.repository;
 
-import com.example.ExpenseManagement.model.User;
+import com.example.ExpenseManagement.model.user.User;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;
 

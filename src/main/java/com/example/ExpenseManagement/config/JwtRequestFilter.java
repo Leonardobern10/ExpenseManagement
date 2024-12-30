@@ -1,6 +1,6 @@
 package com.example.ExpenseManagement.config;
 
-import com.example.ExpenseManagement.model.User;
+import com.example.ExpenseManagement.model.user.User;
 import com.example.ExpenseManagement.repository.UserRepository;
 import com.example.ExpenseManagement.util.JwtUtil;
 import jakarta.servlet.FilterChain;
@@ -14,7 +14,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
-import java.util.List;
 import java.util.Optional;
 
 /**
@@ -91,8 +90,6 @@ public class JwtRequestFilter extends OncePerRequestFilter {
                 }
             }
         }
-
-
         // Continuar com a cadeia de filtros
         chain.doFilter(request, response);
     }

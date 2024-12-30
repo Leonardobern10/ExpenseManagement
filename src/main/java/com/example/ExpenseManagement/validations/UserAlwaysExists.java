@@ -1,6 +1,6 @@
 package com.example.ExpenseManagement.validations;
 
-import com.example.ExpenseManagement.model.User;
+import com.example.ExpenseManagement.model.user.User;
 
 import java.util.Optional;
 

@@ -2,6 +2,9 @@ package com.example.ExpenseManagement.service;
 
 import com.example.ExpenseManagement.dto.UpdateMovimentationDTO;
 import com.example.ExpenseManagement.model.*;
+import com.example.ExpenseManagement.model.movimentations.MovimentationUpdatedImpl;
+import com.example.ExpenseManagement.model.movimentations.Movimentations;
+import com.example.ExpenseManagement.model.movimentations.MovimentationsDirectorUpdate;
 import com.example.ExpenseManagement.repository.*;
 import io.jsonwebtoken.JwtException;
 import org.springframework.data.domain.PageRequest;
@@ -32,7 +35,7 @@ public class MovimentationsService {
 
     public PagedModel<Movimentations> getMovimentationsByUser (Integer page, Integer size) {
         try {
-            String userId = search.searchUsername();
+            String userId = search.searchUsername().getId();
             Pageable pageable = PageRequest.of(page, size);
             return new PagedModel<>(movimentationsRepository.findByUserId(userId, pageable));
         } catch ( JwtException | IllegalArgumentException e) {
@@ -64,7 +67,8 @@ public class MovimentationsService {
         try {
             search.searchUsername();
             Movimentations oldMovimentation = getOneMovimentation(idMovimentation);
-            oldMovimentation = MovimentationsDirectorUpdate.construct(new MovimentationUpdatedImpl(oldMovimentation),
+            oldMovimentation = MovimentationsDirectorUpdate
+                    .construct(new MovimentationUpdatedImpl(oldMovimentation),
                     movimentation.description(), movimentation.amount(),
                     movimentation.category(), LocalDateTime.now());
             movimentationsRepository.save(oldMovimentation);
@@ -73,27 +77,12 @@ public class MovimentationsService {
         }
     }
 
-    /*
-    public void updateDebtSituation (String idDebt) {
-        try {
-            searchUsername();
-            Movimentations oldDebt = (Debt) getOneMovimentation(idDebt);
-            if (oldDebt == Status.NOT_PAID_OFF) {
-                oldDebt.setStatus(Status.PAID_OFF);
-            } else {
-                oldDebt.setStatus(Status.NOT_PAID_OFF);
-            }
-            movimentationsRepository.save(oldExpense);
-        } catch (IllegalArgumentException e) {
-            throw new IllegalArgumentException(e.getMessage());
-        }
-    }*/
-
     public List<Movimentations> getMovimentationsByCategory (String category) {
         try {
-            String userId = search.searchUsername();
+            String userId = search.searchUsername().getId();
             System.out.println(userId);
-            return movimentationsRepositoryCustomImpl.findMovimentationsByCategory(userId, category);
+            return movimentationsRepositoryCustomImpl
+                    .findMovimentationsByCategory(userId, category);
         } catch (IllegalArgumentException e) {
             throw new IllegalArgumentException(e.getMessage());
         }
@@ -101,8 +90,9 @@ public class MovimentationsService {
 
     public List<Movimentations> getMovimentationsByYear (int year) {
         try {
-            String userId = search.searchUsername();
-            return movimentationsRepositoryCustomImpl.findMovimentationsByYear(userId, year);
+            String userId = search.searchUsername().getId();
+            return movimentationsRepositoryCustomImpl
+                    .findMovimentationsByYear(userId, year);
         } catch (IllegalArgumentException e) {
             throw new IllegalArgumentException(e.getMessage());
         }
@@ -110,17 +100,19 @@ public class MovimentationsService {
 
     public List<Movimentations> getMovimentationsByMonth (int year, Month month) {
         try {
-            String userId = search.searchUsername();
-            return movimentationsRepositoryCustomImpl.findMovimentationsByMonth(userId, year, month.getDescription());
+            String userId = search.searchUsername().getId();
+            return movimentationsRepositoryCustomImpl
+                    .findMovimentationsByMonth(userId, year, month.getDescription());
         } catch (IllegalArgumentException e) {
             throw new IllegalArgumentException(e.getMessage());
         }
     }
 
-    public List<Movimentations> getMovimentationsByDay (int year, int month, int day) {
+    public List<Movimentations> getMovimentationsByDay (int year, Month month, int day) {
         try {
-            String userId = search.searchUsername();
-            return movimentationsRepositoryCustomImpl.findMovimentationsByDay(userId, year, month, day);
+            String userId = search.searchUsername().getId();
+            return movimentationsRepositoryCustomImpl
+                    .findMovimentationsByDay(userId, year, month.getDescription(), day);
         } catch (IllegalArgumentException e) {
             throw new IllegalArgumentException(e.getMessage());
         }

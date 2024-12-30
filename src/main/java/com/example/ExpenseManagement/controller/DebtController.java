@@ -3,7 +3,6 @@ package com.example.ExpenseManagement.controller;
 import com.example.ExpenseManagement.dto.InsertDebtDTO;
 import com.example.ExpenseManagement.model.Debt;
 import com.example.ExpenseManagement.service.DebtsService;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -34,10 +33,18 @@ public class DebtController {
         return ResponseEntity.ok(debtsService.getOneDebt(idDebt));
     }
 
-    @GetMapping("/{idDebt}/payment/value") // ! - Não está funcionando
+    @GetMapping("/{idDebt}/payment/value") // ? - TUDO OK!
     public ResponseEntity<Void> updateStatusPayment(@PathVariable String idDebt,
                                                     @RequestParam Double value) {
         debtsService.updateStatusPayment(idDebt, value);
+        return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/{category}/limit")
+    public ResponseEntity<Void> createLimitToCategory (
+            @PathVariable String category, @RequestParam Double limit
+    ) {
+        debtsService.limitPerCategory(category, limit);
         return ResponseEntity.ok().build();
     }
 }

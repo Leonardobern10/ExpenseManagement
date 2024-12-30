@@ -2,7 +2,7 @@ package com.example.ExpenseManagement.controller;
 
 import com.example.ExpenseManagement.dto.AuthRequest;
 import com.example.ExpenseManagement.dto.AuthResponse;
-import com.example.ExpenseManagement.model.User;
+import com.example.ExpenseManagement.model.user.User;
 import com.example.ExpenseManagement.service.AuthService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;

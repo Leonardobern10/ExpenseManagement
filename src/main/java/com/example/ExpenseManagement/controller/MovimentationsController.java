@@ -2,7 +2,7 @@ package com.example.ExpenseManagement.controller;
 
 import com.example.ExpenseManagement.dto.UpdateMovimentationDTO;
 import com.example.ExpenseManagement.model.Month;
-import com.example.ExpenseManagement.model.Movimentations;
+import com.example.ExpenseManagement.model.movimentations.Movimentations;
 import com.example.ExpenseManagement.service.MovimentationsService;
 import org.springframework.data.web.PagedModel;
 import org.springframework.http.ResponseEntity;
@@ -75,7 +75,7 @@ public class MovimentationsController {
     // ? - Tudo ok!
     @GetMapping("/year/{year}/month/{month}/day")
     public ResponseEntity<List<Movimentations>> getMovimentationsByDay (
-            @PathVariable Integer year, @PathVariable Integer month,
+            @PathVariable Integer year, @PathVariable Month month,
             @RequestParam Integer day) {
         return ResponseEntity.ok(movimentationsService.getMovimentationsByDay(year, month, day));
     }

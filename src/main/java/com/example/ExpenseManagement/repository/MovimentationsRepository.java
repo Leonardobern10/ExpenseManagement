@@ -1,6 +1,6 @@
 package com.example.ExpenseManagement.repository;
 
-import com.example.ExpenseManagement.model.Movimentations;
+import com.example.ExpenseManagement.model.movimentations.Movimentations;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.repository.MongoRepository;

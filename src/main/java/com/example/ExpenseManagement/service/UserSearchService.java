@@ -1,5 +1,6 @@
 package com.example.ExpenseManagement.service;
 
+import com.example.ExpenseManagement.model.user.User;
 import com.example.ExpenseManagement.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
@@ -16,14 +17,14 @@ public class UserSearchService {
         this.userRepository = userRepository;
     }
 
-    public String searchUsername () throws IllegalArgumentException {
+    public User searchUsername () throws IllegalArgumentException {
         // Obtém o nome de usuário a partir do contexto de segurança
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String username = authentication.getName();  // O nome de usuário está no contexto de autenticação
 
         // Busca o ID do usuário correspondente
-        return String.valueOf(userRepository.findByUsername(username).orElseThrow(
+        return userRepository.findByUsername(username).orElseThrow(
                 () -> new IllegalArgumentException("User not found!")
-        ).getId());
+        );
     }
 }

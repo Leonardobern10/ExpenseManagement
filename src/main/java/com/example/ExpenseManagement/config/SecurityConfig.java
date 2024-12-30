@@ -26,7 +26,6 @@ public class SecurityConfig {
 
     private final JwtRequestFilter jwtRequestFilter;
 
-
     /**
      * Construtor da classe SecurityConfig.
      *

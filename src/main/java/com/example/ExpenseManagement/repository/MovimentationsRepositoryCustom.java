@@ -1,6 +1,6 @@
 package com.example.ExpenseManagement.repository;
 
-import com.example.ExpenseManagement.model.Movimentations;
+import com.example.ExpenseManagement.model.movimentations.Movimentations;
 
 import java.util.List;
 

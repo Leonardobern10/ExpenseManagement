@@ -1,4 +1,4 @@
-package com.example.ExpenseManagement.model;
+package com.example.ExpenseManagement.model.movimentations;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -16,41 +16,41 @@ public class Movimentations {
     private String userId;
     private String description;
     private double amount;
-    private String category;
+    private String categoryName;
     private LocalDateTime date = LocalDateTime.now();
     private String person;
     private List<String> registers;
 
 
     public Movimentations(String userId, String description, double amount,
-                          String category, LocalDateTime date) {
+                          String categoryName, LocalDateTime date) {
         this.userId = userId;
         this.description = description;
         this.amount = amount;
-        this.category = category;
+        this.categoryName = categoryName;
         this.date = date;
         this.person = null;
         this.registers = null;
     }
 
     public Movimentations(String userId, String description, double amount,
-                          String category, LocalDateTime date, String person) {
+                          String categoryName, LocalDateTime date, String person) {
         this.userId = userId;
         this.description = description;
         this.amount = amount;
-        this.category = category;
+        this.categoryName = categoryName;
         this.date = date;
         this.person = person;
         this.registers = null;
     }
 
     public Movimentations(String userId, String description, double amount,
-                          String category, LocalDateTime date, String person,
+                          String categoryName, LocalDateTime date, String person,
                           List<String> registers) {
         this.userId = userId;
         this.description = description;
         this.amount = amount;
-        this.category = category;
+        this.categoryName = categoryName;
         this.date = date;
         this.person = person;
         this.registers = registers;
@@ -91,12 +91,12 @@ public class Movimentations {
         this.amount = amount;
     }
 
-    public String getCategory() {
-        return category;
+    public String getCategoryName () {
+        return categoryName;
     }
 
-    public void setCategory(String category) {
-        this.category = category;
+    public void setCategoryName (String categoryName) {
+        this.categoryName = categoryName;
     }
 
     public LocalDateTime getDate() {

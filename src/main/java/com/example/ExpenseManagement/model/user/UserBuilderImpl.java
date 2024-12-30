@@ -1,5 +1,6 @@
-package com.example.ExpenseManagement.model;
+package com.example.ExpenseManagement.model.user;
 
+import com.example.ExpenseManagement.model.Role;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -24,6 +25,11 @@ public class UserBuilderImpl implements UserBuilder {
     @Override
     public void buildRole (Role role) {
         user.setRole(role);
+    }
+
+    @Override
+    public void buildEmail (String email) {
+        user.setEmail(email);
     }
 
     @Override

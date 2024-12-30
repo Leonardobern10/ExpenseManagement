@@ -2,11 +2,15 @@ package com.example.ExpenseManagement.service;
 
 import com.example.ExpenseManagement.dto.InsertReceivableDTO;
 import com.example.ExpenseManagement.model.*;
+import com.example.ExpenseManagement.model.movimentations.Movimentations;
 import com.example.ExpenseManagement.repository.MovimentationsRepository;
+import com.example.ExpenseManagement.validations.DateTimeValidation;
+import com.example.ExpenseManagement.validations.MovimentationIsReceivableValidation;
+import com.example.ExpenseManagement.validations.PaymentValidation;
+import com.example.ExpenseManagement.validations.StatusPaymentValidation;
 import io.jsonwebtoken.JwtException;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,17 +27,15 @@ public class ReceivableServices {
 
     public Receivable createReceivable (InsertReceivableDTO receivable) {
         try {
-            String userId = search.searchUsername();
-            Receivable newReceivable = new Receivable(userId, receivable.description(), receivable.amount(),
-                    receivable.category(), receivable.dateTime(), receivable.statusReceivable(), receivable.person());// Associa a despesa ao usuário
+            String userId = search.searchUsername().getId();
+            Receivable newReceivable = new Receivable(
+                    userId, receivable.description(), receivable.amount(),
+                    receivable.category(), receivable.dateTime(),
+                    receivable.statusReceivable(), receivable.person());// Associa a despesa ao usuário
 
-            if (receivable.dateTime() == null) {
-                newReceivable.setDate(LocalDateTime.now());
-            }
+            DateTimeValidation.validate(newReceivable);
 
-            if (receivable.statusReceivable() == null) {
-                newReceivable.setStatusReceivable(StatusReceivable.NOT_RECEIVED);
-            }
+            StatusPaymentValidation.validateNull(newReceivable);
 
             return movimentationsRepository.save(newReceivable);
         } catch ( JwtException e) {
@@ -45,47 +47,41 @@ public class ReceivableServices {
     public List<Receivable> getAllReceivables () {
         try {
             List<Movimentations> movimentations = movimentationsRepository.findAll();
-            List<Receivable> receivables = new ArrayList<>(List.of());
-            for (Movimentations mov : movimentations) {
-                if (mov.getClass() == Receivable.class) {
-                    receivables.add((Receivable) mov);
-                }
-            }
-            return receivables;
+            return toIdentifyReceivables(movimentations);
         } catch ( JwtException | IllegalArgumentException e ) {
             throw new RuntimeException(e.getMessage());
         }
     }
 
     public Receivable getOneReceivables (String idDebt) {
-        Movimentations movimentation = movimentationsRepository.findById(idDebt)
-                .orElseThrow(() -> new IllegalArgumentException("Debt register is invalid!"));
+        try {
+            Movimentations movimentation = movimentationsRepository.findById(idDebt)
+                    .orElseThrow(() -> new IllegalArgumentException("Debt register is invalid!"));
 
-        if (! (movimentation.getClass() == Receivable.class) )
-            throw new IllegalArgumentException("This debt is invalid!");
+            MovimentationIsReceivableValidation.validate(movimentation);
 
-        return (Receivable) movimentation;
+            return (Receivable) movimentation;
+        } catch ( RuntimeException e ) {
+            throw new RuntimeException(e.getMessage());
+        }
     }
 
     public void updateStatusReceivement (String idDebt, Double value) {
         Receivable receivable = getOneReceivables(idDebt);
-
-        if ( value.isNaN() || value <= 0 || value > receivable.getAmount()){
-            throw new IllegalArgumentException("This value is invalid!");
-        }
-
+        StatusPaymentValidation.validate(value, receivable.getAmount());
         receivable.setAmount(receivable.getAmount() - value);
-
-        if ( receivable.getAmount() == 0) {
-            receivable.setStatusReceivable(StatusReceivable.RECEIVED);
-        }
-
-        ValuePaid valuePaid = new ValuePaid(LocalDateTime.now(), value);
-
-        if (receivable.getRegisters() == null) {
-            receivable.setRegisters(new ArrayList<>());
-        }
-        receivable.addRegister(valuePaid.toString());
+        PaymentValidation.validate(receivable);
+        ValuePaidService.insertValuePaid(receivable, value);
         movimentationsRepository.save(receivable);
+    }
+
+    private List<Receivable> toIdentifyReceivables (List<Movimentations> movimentations) {
+        List<Receivable> receivables = new ArrayList<>(List.of());
+        for (Movimentations mov : movimentations) {
+            if (mov.getClass() == Receivable.class) {
+                receivables.add((Receivable) mov);
+            }
+        }
+        return receivables;
     }
 }

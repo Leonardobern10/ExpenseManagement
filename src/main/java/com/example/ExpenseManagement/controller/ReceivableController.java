@@ -1,7 +1,7 @@
 package com.example.ExpenseManagement.controller;
 
 import com.example.ExpenseManagement.dto.InsertReceivableDTO;
-import com.example.ExpenseManagement.model.Movimentations;
+import com.example.ExpenseManagement.model.movimentations.Movimentations;
 import com.example.ExpenseManagement.model.Receivable;
 import com.example.ExpenseManagement.service.ReceivableServices;
 import org.springframework.http.ResponseEntity;

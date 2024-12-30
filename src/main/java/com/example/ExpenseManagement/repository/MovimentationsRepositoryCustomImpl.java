@@ -1,6 +1,6 @@
 package com.example.ExpenseManagement.repository;
 
-import com.example.ExpenseManagement.model.Movimentations;
+import com.example.ExpenseManagement.model.movimentations.Movimentations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
@@ -24,7 +24,7 @@ public class MovimentationsRepositoryCustomImpl implements MovimentationsReposit
                         .gte(LocalDateTime.of(year, 1, 1, 0, 0))
                         .lte(LocalDateTime.of(year, 12, 31, 23, 59))
                         .and("userId").is(userId)),
-                Aggregation.project("userId", "description", "amount", "category", "date"));
+                Aggregation.project("userId", "description", "amount", "categoryName", "date"));
 
         AggregationResults<Movimentations> results = mongoTemplate.aggregate(
                 aggregation, Movimentations.class, Movimentations.class);
@@ -39,7 +39,7 @@ public class MovimentationsRepositoryCustomImpl implements MovimentationsReposit
                         .gte(LocalDateTime.of(year, month, 1, 0, 0))
                         .lte(LocalDateTime.of(year, month, 31, 23, 59))
                         .and("userId").is(userId)),
-                Aggregation.project("userId", "description", "amount", "category", "date"));
+                Aggregation.project("userId", "description", "amount", "categoryName", "date"));
 
         AggregationResults<Movimentations> results = mongoTemplate.aggregate(
                 aggregation, Movimentations.class, Movimentations.class);
@@ -54,7 +54,7 @@ public class MovimentationsRepositoryCustomImpl implements MovimentationsReposit
                         .gte(LocalDateTime.of(year, month, day, 0, 0))
                         .lte(LocalDateTime.of(year, month, day, 23, 59))
                         .and("userId").is(userId)),
-                Aggregation.project("userId", "description", "amount", "category", "date")
+                Aggregation.project("userId", "description", "amount", "categoryName", "date")
         );
         AggregationResults<Movimentations> results = mongoTemplate.aggregate(aggregation, Movimentations.class, Movimentations.class);
         return results.getMappedResults();
@@ -65,9 +65,9 @@ public class MovimentationsRepositoryCustomImpl implements MovimentationsReposit
     public List<Movimentations> findMovimentationsByCategory (String userId,
                                                               String category) {
         Aggregation aggregation = Aggregation.newAggregation(
-                Aggregation.match(Criteria.where("category").is(category)
+                Aggregation.match(Criteria.where("categoryName").is(category)
                         .and("userId").is(userId)),
-                Aggregation.project("userId", "description", "amount", "category", "date")
+                Aggregation.project("userId", "description", "amount", "categoryName", "date")
         );
         AggregationResults<Movimentations> results = mongoTemplate.aggregate(aggregation, Movimentations.class, Movimentations.class);
         return results.getMappedResults();

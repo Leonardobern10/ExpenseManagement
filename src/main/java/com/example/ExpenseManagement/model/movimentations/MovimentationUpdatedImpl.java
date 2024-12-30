@@ -1,12 +1,11 @@
-package com.example.ExpenseManagement.model;
+package com.example.ExpenseManagement.model.movimentations;
 
-import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
 
 @Component
-public class MovimentationUpdatedImpl implements MovimentationUpdater{
+public class MovimentationUpdatedImpl implements MovimentationUpdater {
     private final Movimentations movimentations;
 
     public MovimentationUpdatedImpl (Movimentations movimentations) {
@@ -25,7 +24,7 @@ public class MovimentationUpdatedImpl implements MovimentationUpdater{
 
     @Override
     public void updateCategory (String category) {
-        movimentations.setCategory(category);
+        movimentations.setCategoryName(category);
     }
 
     @Override
