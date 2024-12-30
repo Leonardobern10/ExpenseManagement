@@ -8,6 +8,7 @@ Uma API para gerenciar movimentações financeiras, incluindo controle de despes
   - Consultas por mês, ano e categoria.
   - Atualização do status de pagamento.
 - Controle de limites por categoria.
+  - Alerta por e-mail caso a categoria tenha superado o limite definido.
 - Cadastro e autenticação de usuários:
   - Baseada em tokens JWT.
   - Roles de usuário: ADMIN e USER.
