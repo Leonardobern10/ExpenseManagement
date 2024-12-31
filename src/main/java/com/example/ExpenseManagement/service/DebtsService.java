@@ -61,7 +61,7 @@ public class DebtsService {
         return (Debt) movimentation;
     }
 
-    // ! - Em andamento...
+    // ? - Tudo ok!
     public Debt createDebt(InsertDebtDTO debt) {
         try {
             // Localização do usuário proprietario da sessao
@@ -72,8 +72,10 @@ public class DebtsService {
                     debt.amount(), debt.category(), debt.dateTime(),
                     debt.statusDebt(), debt.person());
 
-            // Criação da categoria caso não exista
-            user.createCategory(newDebt);
+            // ? - Criação da categoria caso não exista
+            // Função removida de User e passada para CategoryService por
+            // questões de responsabilidade
+            categoryService.createCategory(user, newDebt);
 
             // Se dataTime não for passada a hora atual é definido
             DateTimeValidation.validate(newDebt);
@@ -100,11 +102,11 @@ public class DebtsService {
         StatusPaymentValidation.validate(value, debt.getAmount());
         debt.setAmount(debt.getAmount() - value);
 
-        for( Category category : user.getCategories()) {
-            if (Objects.equals(category.getName(), debt.getCategoryName())) {
-                category.setTotalValue(category.getTotalValue() - value);
-                break;
-            }
+        // ? - ATUALIZADO
+        // Procura uma categoria na lista de categorias do usuario
+        Category category = categoryService.searchCategory(user.getCategories(), debt.getCategoryName());
+        if (category != null) {
+            category.setTotalValue(category.getTotalValue() - value);
         }
         PaymentValidation.validate(debt);
         ValuePaidService.insertValuePaid(debt, value);
@@ -124,9 +126,10 @@ public class DebtsService {
         }
     }
 
-    // ! - Inserir algoritmo de busca
+    // ? - Tudo ok!
     private void addAllDebts (List<Movimentations> movimentations,
                               List<Debt> debts) {
+        // * - O algoritmo precisa iterar sobre toda a lista pois precisa verificar cada elemento
         for (Movimentations mov : movimentations) {
             if (mov.getClass() == Debt.class) {
                 debts.add((Debt) mov);
@@ -134,26 +137,19 @@ public class DebtsService {
         }
     }
 
+    // Procura uma categoria na lista de categorias do usuario
     private void sendEmailIfLimitIsUltrapassed (User user, Debt debt) {
-        if (user.getCategories() != null) {
-            Set<Category> categoryList = user.getCategories();
-            for (Category currentCategory : categoryList) {
-                if ( Objects.equals(currentCategory.getName(), debt.getCategoryName())
-                        && currentCategory.getLimit() != null) {
-                    categoryService.amountBiggerLimit(user, currentCategory);
-                    break;
-                }
-            }
+        Category category = categoryService.searchCategory(user.getCategories(), debt.getCategoryName());
+        if (category != null && category.getLimit() != null) {
+            categoryService.amountBiggerLimit(user, category);
         }
     }
 
     private void setLimitIfCategoryExist(Set<Category> categoryList,
-                                         String category, Double limit) {
-        for (Category categoryTarget : categoryList) {
-            if ( Objects.equals(categoryTarget.getName(), category)) {
-                categoryTarget.setLimit(limit);
-                break;
-            }
+                                         String categoryName, Double limit) {
+        Category category = categoryService.searchCategory(categoryList, categoryName);
+        if (category != null) {
+            category.setLimit(limit);
         }
     }
 
