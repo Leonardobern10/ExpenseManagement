@@ -9,6 +9,10 @@ import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 
+/**
+ * Service responsável por enviar e-mails relacionados ao sistema de gerenciamento de dívidas.
+ * Em particular, este serviço lida com o envio de e-mails de alerta quando o limite de categoria é ultrapassado.
+ */
 @Service
 public class EmailService {
 
@@ -18,10 +22,22 @@ public class EmailService {
     @Value("${author}")
     private String author;
 
+    /**
+     * Construtor da classe {@link EmailService}.
+     *
+     * @param javaMailSender o serviço responsável pelo envio de e-mails.
+     */
     public EmailService (JavaMailSender javaMailSender) {
         this.javaMailSender = javaMailSender;
     }
 
+    /**
+     * Envia um e-mail simples informando o usuário de que o limite de dívida da categoria foi ultrapassado.
+     * O corpo do e-mail contém detalhes sobre o limite, o valor atual e o excedente.
+     *
+     * @param alert o objeto que contém as informações para o e-mail, incluindo o usuário e a categoria.
+     * @throws RuntimeException se ocorrer um erro durante o envio do e-mail.
+     */
     public void sendSimpleEmail (AlertLimitUltrapassedEmailDTO alert) {
         try {
             SimpleMailMessage message = new SimpleMailMessage();
@@ -33,6 +49,14 @@ public class EmailService {
         }
     }
 
+
+    /**
+     * Cria o corpo do e-mail com informações detalhadas sobre o limite ultrapassado.
+     * O corpo inclui o nome do usuário, o nome da categoria, o limite definido, o total atual e o excedente.
+     *
+     * @param alert o objeto que contém os dados necessários para a construção do corpo do e-mail.
+     * @return o corpo do e-mail formatado como uma String.
+     */
     private String createBody (AlertLimitUltrapassedEmailDTO alert) {
         return String.format(
                 """
@@ -68,6 +92,11 @@ public class EmailService {
         );
     }
 
+    /**
+     * Retorna o nome do autor configurado na aplicação.
+     *
+     * @return o nome do autor.
+     */
     public String getAuthor () {
         return author;
     }

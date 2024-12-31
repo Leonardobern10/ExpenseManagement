@@ -19,6 +19,10 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
+/**
+ * Serviço responsável pela gestão das dívidas dos usuários, incluindo a criação, atualização, e verificação de limites.
+ * Este serviço também lida com a validação das dívidas e o envio de alertas por e-mail caso os limites de categoria sejam ultrapassados.
+ */
 @Service
 public class DebtsService {
 
@@ -27,6 +31,15 @@ public class DebtsService {
     private final UserRepository userRepository;
     private final CategoryService categoryService;
 
+    /**
+     * Construtor do serviço de dívidas.
+     *
+     * @param movimentationsRepository Repositório para interagir com as movimentações de dívidas.
+     * @param search Serviço para buscar o usuário.
+     * @param movimentationsRepositoryCustom Repositório personalizado para movimentações.
+     * @param userRepository Repositório de usuários.
+     * @param categoryService Serviço para gerenciar as categorias de dívidas.
+     */
     public DebtsService (MovimentationsRepository movimentationsRepository,
                          UserSearchService search,
                          MovimentationsRepositoryCustomImpl movimentationsRepositoryCustom,
@@ -38,8 +51,13 @@ public class DebtsService {
         this.categoryService = categoryService;
     }
 
-    // ? - Tudo ok!
-    public List<Debt> getAllDebts () {
+    /**
+     * Recupera todas as dívidas.
+     *
+     * @return Lista de todas as dívidas.
+     * @throws RuntimeException Caso ocorra algum erro ao recuperar as dívidas.
+     */
+    public List<Debt> getAllDebts () {     // ? - Tudo ok!
         try {
             List<Movimentations> movimentations = movimentationsRepository.findAll();
             List<Debt> debts = new ArrayList<>(List.of());
@@ -50,8 +68,14 @@ public class DebtsService {
         }
     }
 
-    // ? - Tudo ok!
-    public Debt getOneDebt (String idDebt) {
+    /**
+     * Recupera uma dívida específica pelo ID.
+     *
+     * @param idDebt ID da dívida a ser recuperada.
+     * @return A dívida correspondente ao ID.
+     * @throws IllegalArgumentException Caso o ID da dívida seja inválido.
+     */
+    public Debt getOneDebt (String idDebt) {    // ? - Tudo ok!
         Movimentations movimentation = movimentationsRepository.findById(idDebt)
                 .orElseThrow(() -> new IllegalArgumentException("Debt register is invalid!"));
 
@@ -61,60 +85,61 @@ public class DebtsService {
         return (Debt) movimentation;
     }
 
-    // ? - Tudo ok!
+    /**
+     * Cria uma nova dívida para um usuário, validando e configurando as informações necessárias.
+     *
+     * @param debt Dados necessários para criar a dívida.
+     * @return A dívida criada.
+     * @throws RuntimeException Caso ocorra algum erro ao criar a dívida.
+     */
     public Debt createDebt(InsertDebtDTO debt) {
         try {
-            // Localização do usuário proprietario da sessao
-            User user = search.searchUsername();
-
-            // Criação do objeto Debt
-            Debt newDebt = new Debt(user.getId(), debt.description(),
+           User user = search.searchUsername();
+           Debt newDebt = new Debt(user.getId(), debt.description(),
                     debt.amount(), debt.category(), debt.dateTime(),
                     debt.statusDebt(), debt.person());
-
-            // ? - Criação da categoria caso não exista
-            // Função removida de User e passada para CategoryService por
-            // questões de responsabilidade
-            categoryService.createCategory(user, newDebt);
-
-            // Se dataTime não for passada a hora atual é definido
-            DateTimeValidation.validate(newDebt);
-
-            // Se statusDebt não for informada o padrão é Not_paid_off
-            StatusPaymentValidation.validateNull(newDebt);
-
-            // Se a categoria esta na lista e seu limite é ultrapassado
-            // um email é disparado para o usuario para alertá-lo
-            sendEmailIfLimitIsUltrapassed(user, newDebt);
-
-            // Retorna o objeto Debt criado
-            userRepository.save(user);
-            return movimentationsRepository.save(newDebt);
+           categoryService.createCategory(user, newDebt);
+           DateTimeValidation.validate(newDebt);
+           StatusPaymentValidation.validateNull(newDebt);
+           sendEmailIfLimitIsUltrapassed(user, newDebt);
+           userRepository.save(user);
+           return movimentationsRepository.save(newDebt);
         } catch ( RuntimeException e) {
             throw new RuntimeException(e.getMessage());
         }
     }
 
-    // ? - Tudo ok!
+    /**
+     * Atualiza o status de pagamento de uma dívida.
+     *
+     * @param idDebt ID da dívida a ser atualizada.
+     * @param value Valor pago que será subtraído da dívida.
+     * @throws RuntimeException Caso ocorra algum erro ao atualizar o status de pagamento.
+     */
     public void updateStatusPayment (String idDebt, Double value) {
         User user = search.searchUsername();
         Debt debt = getOneDebt(idDebt);
         StatusPaymentValidation.validate(value, debt.getAmount());
         debt.setAmount(debt.getAmount() - value);
 
-        // ? - ATUALIZADO
-        // Procura uma categoria na lista de categorias do usuario
         Category category = categoryService.searchCategory(user.getCategories(), debt.getCategoryName());
         if (category != null) {
             category.setTotalValue(category.getTotalValue() - value);
         }
+
         PaymentValidation.validate(debt);
         ValuePaidService.insertValuePaid(debt, value);
         movimentationsRepository.save(debt);
         userRepository.save(user);
     }
 
-    // ? - Tudo ok!
+    /**
+     * Define o limite para uma categoria de um usuário.
+     *
+     * @param category Nome da categoria a ter seu limite alterado.
+     * @param limit Novo limite da categoria.
+     * @throws RuntimeException Caso ocorra algum erro ao definir o limite.
+     */
     public void limitPerCategory (String category, Double limit) {
         try {
             User user = search.searchUsername(); // Busca pelo usuario
@@ -126,7 +151,12 @@ public class DebtsService {
         }
     }
 
-    // ? - Tudo ok!
+    /**
+     * Adiciona todas as dívidas encontradas em movimentações à lista de dívidas.
+     *
+     * @param movimentations Lista de movimentações para iterar.
+     * @param debts Lista de dívidas a ser preenchida.
+     */
     private void addAllDebts (List<Movimentations> movimentations,
                               List<Debt> debts) {
         // * - O algoritmo precisa iterar sobre toda a lista pois precisa verificar cada elemento
@@ -137,7 +167,12 @@ public class DebtsService {
         }
     }
 
-    // Procura uma categoria na lista de categorias do usuario
+    /**
+     * Envia um e-mail se o limite de uma categoria for ultrapassado.
+     *
+     * @param user O usuário que possui a categoria.
+     * @param debt A dívida associada à categoria.
+     */
     private void sendEmailIfLimitIsUltrapassed (User user, Debt debt) {
         Category category = categoryService.searchCategory(user.getCategories(), debt.getCategoryName());
         if (category != null && category.getLimit() != null) {
@@ -145,6 +180,13 @@ public class DebtsService {
         }
     }
 
+    /**
+     * Define o limite de uma categoria se a categoria existir na lista.
+     *
+     * @param categoryList Lista de categorias do usuário.
+     * @param categoryName Nome da categoria a ser modificada.
+     * @param limit Novo limite da categoria.
+     */
     private void setLimitIfCategoryExist(Set<Category> categoryList,
                                          String categoryName, Double limit) {
         Category category = categoryService.searchCategory(categoryList, categoryName);
