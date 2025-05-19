@@ -28,7 +28,7 @@ Uma API para gerenciar movimentações financeiras, incluindo controle de despes
 
 1. **Clone o repositório:**
    ```bash
-   git clone https://github.com/seu-usuario/seu-repositorio.git
+   git clone https://github.com/Leonardobern10/ExpenseManagement.git
    cd seu-repositorio
    ```
 
